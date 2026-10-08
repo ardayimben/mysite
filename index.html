@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arda</title>
+  <style>
+    :root { color-scheme: light; background: #b9bcc2; --ink: #14161a; --muted: rgba(20,22,26,.8); }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; overflow: hidden; cursor: none; }
+    body { min-height: 100vh; background: #b9bcc2; color: var(--ink); }
+    .background { position: fixed; inset: 0; overflow: hidden; pointer-events: none; background: #b9bcc2; }
+    .background video { width: 100%; height: 100%; object-fit: cover; opacity: .6; }
+    .shade, .vignette, .grain { position: absolute; inset: 0; }
+    .shade { background: linear-gradient(to bottom, rgba(150,154,162,.55), rgba(150,154,162,.3), rgba(120,124,132,.85)); }
+    .vignette { background: radial-gradient(ellipse at center, transparent 0%, rgba(130,134,142,.4) 55%, rgba(100,104,112,.8) 100%); }
+    .grain { opacity: .05; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"); }
+
+    .cursor-ring, .cursor-dot { position: fixed; left: 0; top: 0; z-index: 70; pointer-events: none; border-radius: 50%; will-change: transform; }
+    .cursor-ring { width: 28px; height: 28px; margin: -14px 0 0 -14px; border: 1px solid rgba(20,22,26,.5); }
+    .cursor-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: #14161a; }
+
+    .enter-screen { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: rgba(170,174,182,.72); backdrop-filter: blur(8px); transition: opacity .45s ease, visibility .45s ease; }
+    .enter-screen button { padding: 20px 30px; border: 1px solid rgba(20,22,26,.14); border-radius: 10px; background: rgba(255,255,255,.85); box-shadow: 0 12px 40px rgba(20,22,26,.1); color: rgba(20,22,26,.7); font: 500 12px/1.4 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .3em; text-transform: uppercase; cursor: none; transition: border-color .2s ease, color .2s ease, transform .2s ease; }
+    .enter-screen button:hover { border-color: rgba(20,22,26,.4); color: #14161a; transform: scale(1.03); }
+    .enter-screen.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .volume-control { position: fixed; right: 22px; bottom: 22px; z-index: 30; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid rgba(255,255,255,.8); border-radius: 999px; background: rgba(228,230,234,.5); box-shadow: 0 8px 28px rgba(20,22,26,.18); backdrop-filter: blur(14px); color: rgba(20,22,26,.8); }
+    .volume-control button { display: grid; width: 22px; height: 22px; place-items: center; padding: 0; border: 0; background: transparent; color: inherit; cursor: none; }
+    .volume-control svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; }
+    .volume-control input { width: 86px; height: 3px; accent-color: #14161a; cursor: none; }
+
+    .profile { position: relative; z-index: 1; display: flex; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px 76px; color: var(--ink); text-align: center; }
+    .profile-card { width: min(100%, 540px); padding: clamp(30px, 7vw, 56px); border: 1px solid rgba(255,255,255,.5); border-radius: 18px; background: rgba(228,230,234,.42); box-shadow: 0 24px 80px rgba(20,22,26,.14), inset 0 1px rgba(255,255,255,.9); backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2); }
+    .avatar { display: block; width: 96px; height: 96px; margin: 0 auto 18px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,.9); box-shadow: 0 8px 28px rgba(20,22,26,.2); pointer-events: none; user-select: none; }
+    .profile h1 { margin: 0; font: 600 clamp(48px, 11vw, 78px)/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: -.065em; color: #0d0f12; }
+    .profile-note { margin: 18px 0 0; color: var(--muted); font-size: 15px; line-height: 1.8; }
+    .profile-details { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 26px; }
+    .info-button { padding: 10px 15px; border: 1px solid rgba(20,22,26,.12); border-radius: 9px; background: rgba(240,241,244,.55); box-shadow: 0 4px 14px rgba(20,22,26,.1); color: rgba(20,22,26,.78); font: 500 12px/1.3 ui-sans-serif, system-ui, sans-serif; letter-spacing: .025em; cursor: none; transition: transform .2s ease, border-color .2s ease, color .2s ease, background .2s ease, box-shadow .2s ease; }
+    .info-button:hover { transform: translateY(-3px); border-color: rgba(20,22,26,.3); color: #0d0f12; background: #fff; box-shadow: 0 10px 24px rgba(20,22,26,.14); }
+    .info-button.is-active { border-color: #14161a; color: #fff; background: #14161a; }
+    .nohello { position: fixed; z-index: 2; left: 50%; bottom: 24px; transform: translateX(-50%); color: rgba(20,22,26,.75); font-size: 12px; text-decoration: none; transition: color .2s ease; }
+    .nohello:hover { color: #0d0f12; }
+    .egg { position: fixed; inset: 0; z-index: 60; background: #000; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s ease; }
+    .egg.is-open { opacity: 1; visibility: visible; }
+    .egg video { display: block; width: 100%; height: 100%; object-fit: contain; background: #000; }
+    .draggable { cursor: grab; user-select: none; touch-action: none; }
+    .draggable.is-dragging { cursor: grabbing; }
+    @media (max-width: 480px) { .volume-control { right: 14px; bottom: 14px; } .nohello { bottom: 22px; } }
+    @media (pointer: coarse) { html, body { cursor: auto; } .cursor-ring, .cursor-dot { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="background" aria-hidden="true">
+    <video src="39a87a23-5256-4b39-bdb9-03f56cf2a76b.mp4" autoplay muted loop playsinline></video>
+    <div class="shade"></div><div class="vignette"></div><div class="grain"></div>
+  </div>
+  <audio id="background-audio" src="47f91b87-d1c1-4b3e-a9d7-07bbc80eb42d.mp3" loop preload="auto"></audio>
+  <main class="profile">
+    <section class="profile-card draggable" aria-label="About Arda">
+      <img class="avatar" alt="Arda" draggable="false" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfabdXOXlhFzyiqD2-URt-D1dm21NjXKSBReVNNP505g&s">
+      <h1>Arda</h1>
+      <p class="profile-note">I'm a student. In my free time I like coding in Python and playing LoL and Minecraft.</p>
+      <div class="profile-details" aria-label="About me">
+        <button class="info-button" type="button" aria-pressed="false">Student</button>
+        <button class="info-button" type="button" aria-pressed="false">Python</button>
+        <button class="info-button" type="button" aria-pressed="false">League of Legends</button>
+        <button class="info-button" type="button" aria-pressed="false">Minecraft</button>
+        <button class="info-button" type="button" aria-pressed="false">Eskişehir, Turkey</button>
+        <button class="info-button" type="button" aria-pressed="false">Alf · my dog</button>
+      </div>
+    </section>
+  </main>
+  <a class="nohello draggable" href="https://nohello.net/" target="_blank" rel="noopener noreferrer">no hello</a>
+  <div class="enter-screen" id="enter-screen"><button type="button" aria-label="Click to enter">Click to enter</button></div>
+  <div class="volume-control draggable" aria-label="Audio settings">
+    <button id="mute-button" type="button" aria-label="Mute audio" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path></svg></button>
+    <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="0.35" aria-label="Volume">
+  </div>
+  <div class="egg" id="egg" aria-hidden="true"><video id="egg-video" src="Think%20Fast%20Chucklenuts!.mp4" preload="none" playsinline></video></div>
+  <div class="cursor-ring" id="ring" aria-hidden="true"></div><div class="cursor-dot" id="dot" aria-hidden="true"></div>
+  <script>
+    const ring = document.getElementById('ring');
+    const dot = document.getElementById('dot');
+    let x = innerWidth / 2, y = innerHeight / 2, rx = x, ry = y;
+
+    // Dot updates instantly on every move
+    addEventListener('pointermove', e => {
+      x = e.clientX; y = e.clientY;
+      dot.style.transform = `translate(${x}px, ${y}px)`;
+    }, { passive: true });
+
+    // Ring follows smoothly
+    (function follow() {
+      rx += (x - rx) * 0.18;
+      ry += (y - ry) * 0.18;
+      ring.style.transform = `translate(${rx}px, ${ry}px)`;
+      requestAnimationFrame(follow);
+    })();
+
+    const audio = document.querySelector('#background-audio');
+    const enterScreen = document.querySelector('#enter-screen');
+    const volumeSlider = document.querySelector('#volume-slider');
+    const muteButton = document.querySelector('#mute-button');
+
+    document.querySelectorAll('.info-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const active = button.classList.toggle('is-active');
+        button.setAttribute('aria-pressed', String(active));
+      });
+    });
+
+    // Easter egg: plays the video fullscreen with sound when all buttons are on
+    const egg = document.getElementById('egg');
+    const eggVideo = document.getElementById('egg-video');
+    const infoButtons = [...document.querySelectorAll('.info-button')];
+    let resumeAudio = false;
+    const isOpen = () => egg.classList.contains('is-open');
+
+    function resetButtons() {
+      infoButtons.forEach(b => { b.classList.remove('is-active'); b.setAttribute('aria-pressed', 'false'); });
+    }
+    function openEgg() {
+      resumeAudio = !audio.paused;
+      audio.pause();
+      egg.classList.add('is-open');
+      egg.setAttribute('aria-hidden', 'false');
+      if (egg.requestFullscreen) egg.requestFullscreen().catch(() => {});
+      eggVideo.currentTime = 0;
+      eggVideo.muted = false;
+      eggVideo.volume = 1;
+      eggVideo.play().catch(() => closeEgg());
+    }
+    function closeEgg() {
+      if (!isOpen()) return;
+      eggVideo.pause();
+      egg.classList.remove('is-open');
+      egg.setAttribute('aria-hidden', 'true');
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      resetButtons();
+      if (resumeAudio) audio.play().catch(() => {});
+    }
+    infoButtons.forEach(b => b.addEventListener('click', () => {
+      if (infoButtons.every(x => x.classList.contains('is-active'))) openEgg();
+    }));
+    eggVideo.addEventListener('ended', closeEgg);
+    egg.addEventListener('click', closeEgg);
+    addEventListener('keydown', e => { if (e.key === 'Escape') closeEgg(); });
+    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) closeEgg(); });
+
+    document.querySelectorAll('.draggable').forEach(el => {
+      let sx = 0, sy = 0, ox = 0, oy = 0, moved = false;
+      el.addEventListener('pointerdown', e => {
+        if (e.button !== 0 || e.target.closest('button, input')) return;
+        const r = el.getBoundingClientRect();
+        sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top; moved = false;
+        el.classList.add('is-dragging');
+        el.setPointerCapture(e.pointerId);
+      });
+      el.addEventListener('pointermove', e => {
+        if (!el.hasPointerCapture(e.pointerId)) return;
+        const dx = e.clientX - sx, dy = e.clientY - sy;
+        if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+        if (!moved) return;
+        el.style.position = 'fixed';
+        el.style.left = `${Math.max(0, Math.min(innerWidth - el.offsetWidth, ox + dx))}px`;
+        el.style.top = `${Math.max(0, Math.min(innerHeight - el.offsetHeight, oy + dy))}px`;
+        el.style.margin = '0';
+        el.style.right = 'auto';
+        el.style.bottom = 'auto';
+        el.style.transform = 'none';
+      });
+      const end = () => el.classList.remove('is-dragging');
+      el.addEventListener('pointerup', end);
+      el.addEventListener('pointercancel', end);
+    });
+
+    audio.volume = Number(volumeSlider.value);
+    volumeSlider.addEventListener('input', () => {
+      audio.volume = Number(volumeSlider.value);
+      audio.muted = audio.volume === 0;
+      muteButton.setAttribute('aria-pressed', String(audio.muted));
+    });
+    muteButton.addEventListener('click', () => {
+      audio.muted = !audio.muted;
+      muteButton.setAttribute('aria-pressed', String(audio.muted));
+    });
+    enterScreen.addEventListener('click', () => {
+      enterScreen.classList.add('is-hidden');
+      audio.play().catch(() => {});
+    }, { once: true });
+  </script>
+</body>
+</html>
