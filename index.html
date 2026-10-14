@@ -4,6 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Arda</title>
+  <meta name="description" content="Arda — student, Python, LoL, Minecraft.">
+  <meta name="theme-color" content="#b9bcc2">
+  <meta property="og:title" content="Arda">
+  <meta property="og:description" content="Student. Python, LoL, Minecraft.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
   <style>
     :root { color-scheme: light; background: #b9bcc2; --ink: #14161a; --muted: rgba(20,22,26,.8); }
     * { box-sizing: border-box; }
@@ -16,11 +22,11 @@
     .vignette { background: radial-gradient(ellipse at center, transparent 0%, rgba(130,134,142,.4) 55%, rgba(100,104,112,.8) 100%); }
     .grain { opacity: .05; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"); }
 
-    .cursor-ring, .cursor-dot { position: fixed; left: 0; top: 0; z-index: 70; pointer-events: none; border-radius: 50%; will-change: transform; }
+    .cursor-ring, .cursor-dot { position: fixed; left: 0; top: 0; z-index: 2147483000; pointer-events: none; border-radius: 50%; will-change: transform; }
     .cursor-ring { width: 28px; height: 28px; margin: -14px 0 0 -14px; border: 1px solid rgba(20,22,26,.5); }
     .cursor-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: #14161a; }
 
-    .enter-screen { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: rgba(170,174,182,.72); backdrop-filter: blur(8px); transition: opacity .45s ease, visibility .45s ease; }
+    .enter-screen { position: fixed; inset: 0; z-index: 2147482000; display: grid; place-items: center; background: rgba(170,174,182,.72); backdrop-filter: blur(8px); transition: opacity .45s ease, visibility .45s ease; }
     .enter-screen button { padding: 20px 30px; border: 1px solid rgba(20,22,26,.14); border-radius: 10px; background: rgba(255,255,255,.85); box-shadow: 0 12px 40px rgba(20,22,26,.1); color: rgba(20,22,26,.7); font: 500 12px/1.4 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: .3em; text-transform: uppercase; cursor: none; transition: border-color .2s ease, color .2s ease, transform .2s ease; }
     .enter-screen button:hover { border-color: rgba(20,22,26,.4); color: #14161a; transform: scale(1.03); }
     .enter-screen.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -41,11 +47,28 @@
     .info-button.is-active { border-color: #14161a; color: #fff; background: #14161a; }
     .nohello { position: fixed; z-index: 2; left: 50%; bottom: 24px; transform: translateX(-50%); color: rgba(20,22,26,.75); font-size: 12px; text-decoration: none; transition: color .2s ease; }
     .nohello:hover { color: #0d0f12; }
-    .egg { position: fixed; inset: 0; z-index: 60; background: #000; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s ease; }
+    .egg { position: fixed; inset: 0; z-index: 2147481000; background: #000; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s ease; }
     .egg.is-open { opacity: 1; visibility: visible; }
     .egg video { display: block; width: 100%; height: 100%; object-fit: contain; background: #000; }
     .draggable { cursor: grab; user-select: none; touch-action: none; }
     .draggable.is-dragging { cursor: grabbing; }
+    .cursor-ring { transition: background .2s ease, border-color .2s ease; }
+    .cursor-ring.is-grab { border-color: rgba(20,22,26,.85); }
+    .cursor-ring.is-hover { background: rgba(20,22,26,.06); }
+    .profile-card, .volume-control { transition: rotate .35s cubic-bezier(.2,.8,.2,1), scale .25s ease, box-shadow .25s ease; }
+    .nohello { transition: color .2s ease, rotate .35s cubic-bezier(.2,.8,.2,1), scale .25s ease; }
+    .draggable.is-dragging { scale: 1.03; }
+    .profile-card.is-dragging { box-shadow: 0 44px 110px rgba(20,22,26,.3), inset 0 1px rgba(255,255,255,.9); }
+    body:not(.entered) .reveal { opacity: 0; }
+    body.entered .reveal { animation: rise .9s cubic-bezier(.2,.8,.2,1) both; }
+    body.entered .volume-control.reveal { animation-delay: .25s; }
+    body.entered .nohello.reveal { animation-delay: .4s; }
+    @keyframes rise { from { opacity: 0; translate: 0 28px; } }
+    @media (prefers-reduced-motion: reduce) { body.entered .reveal { animation: none; } }
+    .hint { margin: 20px 0 0; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(20,22,26,.45); opacity: 0; transition: opacity 1.2s ease; }
+    .hint.is-visible { opacity: 1; }
+    .avatar.fallback { display: grid; place-items: center; background: linear-gradient(135deg, #d9dce2, #9da2ac); color: #14161a; font: 600 40px/1 ui-sans-serif, system-ui, sans-serif; }
+    *, *::before, *::after { cursor: none !important; }
     @media (max-width: 480px) { .volume-control { right: 14px; bottom: 14px; } .nohello { bottom: 22px; } }
     @media (pointer: coarse) { html, body { cursor: auto; } .cursor-ring, .cursor-dot { display: none; } }
   </style>
@@ -57,8 +80,8 @@
   </div>
   <audio id="background-audio" src="47f91b87-d1c1-4b3e-a9d7-07bbc80eb42d.mp3" loop preload="auto"></audio>
   <main class="profile">
-    <section class="profile-card draggable" aria-label="About Arda">
-      <img class="avatar" alt="Arda" draggable="false" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfabdXOXlhFzyiqD2-URt-D1dm21NjXKSBReVNNP505g&s">
+    <section class="profile-card draggable reveal" aria-label="About Arda">
+      <img class="avatar" alt="Arda" draggable="false" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'avatar fallback',textContent:'A'}))" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfabdXOXlhFzyiqD2-URt-D1dm21NjXKSBReVNNP505g&s">
       <h1>Arda</h1>
       <p class="profile-note">I'm a student. In my free time I like coding in Python and playing LoL and Minecraft.</p>
       <div class="profile-details" aria-label="About me">
@@ -69,11 +92,12 @@
         <button class="info-button" type="button" aria-pressed="false">Eskişehir, Turkey</button>
         <button class="info-button" type="button" aria-pressed="false">Alf · my dog</button>
       </div>
+      <p class="hint" id="hint">try pressing all of them</p>
     </section>
   </main>
-  <a class="nohello draggable" href="https://nohello.net/" target="_blank" rel="noopener noreferrer">no hello</a>
+  <a class="nohello draggable reveal" href="https://nohello.net/" target="_blank" rel="noopener noreferrer">no hello</a>
   <div class="enter-screen" id="enter-screen"><button type="button" aria-label="Click to enter">Click to enter</button></div>
-  <div class="volume-control draggable" aria-label="Audio settings">
+  <div class="volume-control draggable reveal" aria-label="Audio settings">
     <button id="mute-button" type="button" aria-label="Mute audio" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path></svg></button>
     <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="0.35" aria-label="Volume">
   </div>
@@ -82,7 +106,7 @@
   <script>
     const ring = document.getElementById('ring');
     const dot = document.getElementById('dot');
-    let x = innerWidth / 2, y = innerHeight / 2, rx = x, ry = y;
+    let x = innerWidth / 2, y = innerHeight / 2, rx = x, ry = y, rs = 1;
 
     // Dot updates instantly on every move
     addEventListener('pointermove', e => {
@@ -94,7 +118,11 @@
     (function follow() {
       rx += (x - rx) * 0.18;
       ry += (y - ry) * 0.18;
-      ring.style.transform = `translate(${rx}px, ${ry}px)`;
+      const target = ring.classList.contains('is-down') ? 0.6
+                   : ring.classList.contains('is-hover') ? 1.7
+                   : ring.classList.contains('is-grab') ? 1.3 : 1;
+      rs += (target - rs) * 0.2;
+      ring.style.transform = `translate(${rx}px, ${ry}px) scale(${rs})`;
       requestAnimationFrame(follow);
     })();
 
@@ -119,6 +147,7 @@
 
     function resetButtons() {
       infoButtons.forEach(b => { b.classList.remove('is-active'); b.setAttribute('aria-pressed', 'false'); });
+      sendButtons();
     }
     function openEgg() {
       resumeAudio = !audio.paused;
@@ -141,6 +170,7 @@
       if (resumeAudio) audio.play().catch(() => {});
     }
     infoButtons.forEach(b => b.addEventListener('click', () => {
+      document.getElementById('hint').classList.remove('is-visible');
       if (infoButtons.every(x => x.classList.contains('is-active'))) openEgg();
     }));
     eggVideo.addEventListener('ended', closeEgg);
@@ -148,46 +178,349 @@
     addEventListener('keydown', e => { if (e.key === 'Escape') closeEgg(); });
     document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) closeEgg(); });
 
-    document.querySelectorAll('.draggable').forEach(el => {
-      let sx = 0, sy = 0, ox = 0, oy = 0, moved = false;
+    // ---- Draggable objects: inertia + friction + cross-window transfer ----
+    const FRICTION  = 0.94;  // closer to 1 = glides longer
+    const BOUNCE    = 0.55;  // fraction of speed kept after hitting a wall
+    const MIN_SPEED = 0.05;  // px/frame below which motion stops
+    const MAX_SPEED = 60;    // px/frame cap on throw speed
+    let zTop = 50;
+
+    function sendButtons() {
+      if (channel) channel.postMessage({ type: 'btns', id: myId, s: infoButtons.map(b => b.classList.contains('is-active')) });
+    }
+    infoButtons.forEach(b => b.addEventListener('click', sendButtons));
+
+    // Other windows of this same site (BroadcastChannel is same-origin only)
+    const myId = Math.random().toString(36).slice(2);
+    const channel = 'BroadcastChannel' in window ? new BroadcastChannel('arda-windows') : null;
+    const peers = new Map(); // id -> {x, y, w, h, seen}  (screen coordinates)
+    const api = {};          // key -> handlers for messages from other windows
+
+    // Screen position of this window's viewport (approximate: ignores browser zoom)
+    const view = () => {
+      const border = (outerWidth - innerWidth) / 2;
+      return { x: screenX + border, y: screenY + (outerHeight - innerHeight) - border };
+    };
+    const livePeers = () => {
+      const now = Date.now();
+      for (const [id, p] of peers) if (now - p.seen > 3000) peers.delete(id);
+      return peers;
+    };
+    // Nearest other window (within 250px) that lies in the direction we are moving
+    const peerToward = (gx, gy, vx, vy) => {
+      let best = null, bestD = 250;
+      for (const [id, p] of livePeers()) {
+        const dx = Math.max(p.x - gx, 0, gx - (p.x + p.w));
+        const dy = Math.max(p.y - gy, 0, gy - (p.y + p.h));
+        const d = Math.hypot(dx, dy);
+        if (d > bestD) continue;
+        if (d > 0 && (vx || vy)) {
+          const toX = p.x + p.w / 2 - gx, toY = p.y + p.h / 2 - gy;
+          if (toX * vx + toY * vy <= 0) continue; // moving away from it
+        }
+        best = id; bestD = d;
+      }
+      return best;
+    };
+    // Does any other window overlap this screen rectangle?
+    const peerOverlaps = (gx, gy, w, h) => {
+      for (const p of livePeers().values())
+        if (gx < p.x + p.w && gx + w > p.x && gy < p.y + p.h && gy + h > p.y) return true;
+      return false;
+    };
+
+    if (channel) {
+      const announce = () => {
+        const v = view();
+        channel.postMessage({ type: 'rect', id: myId, x: v.x, y: v.y, w: innerWidth, h: innerHeight });
+      };
+      setInterval(announce, 100);
+      announce();
+      addEventListener('beforeunload', () => channel.postMessage({ type: 'bye', id: myId }));
+      channel.onmessage = ({ data: m }) => {
+        if (m.type === 'rect') peers.set(m.id, { x: m.x, y: m.y, w: m.w, h: m.h, seen: Date.now() });
+        else if (m.type === 'bye') { peers.delete(m.id); Object.values(api).forEach(a => a.byeFrom(m.id)); }
+        else if (m.type === 'transfer' && m.to === myId && api[m.key]) api[m.key].receive(m);
+        else if (m.type === 'ghost' && api[m.key]) api[m.key].ghost(m);
+        else if (m.type === 'ghost-off' && api[m.key]) api[m.key].ghostOff(m);
+        else if (m.type === 'focus') { ducked = true; applyMute(); }
+        else if (m.type === 'claim' && api[m.key]) api[m.key].claimed(m);
+        else if (m.type === 'btns') infoButtons.forEach((b, i) => {
+          b.classList.toggle('is-active', !!m.s[i]);
+          b.setAttribute('aria-pressed', String(!!m.s[i]));
+        });
+      };
+    }
+
+    document.querySelectorAll('.draggable').forEach((el, key) => {
+      let sx = 0, sy = 0, ox = 0, oy = 0, px = 0, py = 0;
+      let vx = 0, vy = 0, moved = false, wasDragged = false, raf = 0, gliding = false, samples = [];
+      let ghostSent = false;   // we are the owner and told others we stick out of our window
+      let ghostSaved = null;   // we are showing someone else's element: our previous inline style
+      let ghostFrom = null;
+
+      const hasPeers = () => livePeers().size > 0;
+      // with other windows around, the element may stick out until its center crosses the edge
+      const boundsX = () => hasPeers() ? [-el.offsetWidth / 2, innerWidth - el.offsetWidth / 2] : [0, Math.max(0, innerWidth - el.offsetWidth)];
+      const boundsY = () => hasPeers() ? [-el.offsetHeight / 2, innerHeight - el.offsetHeight / 2] : [0, Math.max(0, innerHeight - el.offsetHeight)];
+      const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+      const stopGlide = () => { cancelAnimationFrame(raf); gliding = false; };
+      let rot = 0;
+      const setRot = d => { rot = d; el.style.rotate = d ? `${d.toFixed(2)}deg` : ''; };
+
+      function place(nx, ny, quiet) {
+        el.style.position = 'fixed';
+        el.style.left = `${nx}px`;
+        el.style.top = `${ny}px`;
+        el.style.margin = '0';
+        el.style.right = 'auto';
+        el.style.bottom = 'auto';
+        el.style.transform = 'none';
+        if (!quiet) syncGhost();
+      }
+
+      // Owner: tell other windows where the element is while part of it is outside our window
+      function syncGhost() {
+        if (!channel) return;
+        const w = el.offsetWidth, h = el.offsetHeight;
+        const inside = px >= 0 && py >= 0 && px + w <= innerWidth && py + h <= innerHeight;
+        if (inside) {
+          if (ghostSent) { channel.postMessage({ type: 'ghost-off', id: myId, key }); ghostSent = false; }
+          return;
+        }
+        const v = view();
+        channel.postMessage({ type: 'ghost', id: myId, key, gx: v.x + px, gy: v.y + py, w, h, r: rot });
+        ghostSent = true;
+      }
+
+      function endGhost() {
+        if (ghostSaved === null) return;
+        el.style.cssText = ghostSaved;
+        ghostSaved = null; ghostFrom = null;
+      }
+
+      // If the element's center left this window and sits near another one, hand it over
+      function tryTransfer() {
+        if (!channel) return false;
+        const cx = px + el.offsetWidth / 2, cy = py + el.offsetHeight / 2;
+        if (cx >= 0 && cx <= innerWidth && cy >= 0 && cy <= innerHeight) return false;
+        const v = view();
+        const to = peerToward(v.x + cx, v.y + cy, vx, vy);
+        if (!to) return false;
+        channel.postMessage({ type: 'transfer', id: myId, to, key, gx: v.x + px, gy: v.y + py, vx, vy });
+        stopGlide();
+        setRot(0);
+        ghostSent = false; // the new owner draws the part that is still visible here
+        el.style.visibility = 'hidden';
+        el.style.pointerEvents = 'none';
+        return true;
+      }
+
+      // Resting half outside with no other window there? Pull it back inside.
+      function settle() {
+        const w = el.offsetWidth, h = el.offsetHeight;
+        const v = view();
+        if (hasPeers() && peerOverlaps(v.x + px, v.y + py, w, h)) { syncGhost(); return; }
+        px = clamp(px, 0, Math.max(0, innerWidth - w));
+        py = clamp(py, 0, Math.max(0, innerHeight - h));
+        place(px, py);
+      }
+
+      function glide() {
+        gliding = true;
+        let last = performance.now();
+        const step = now => {
+          const dt = Math.min((now - last) / 16.667, 3); // normalize to 60fps frames
+          last = now;
+
+          px += vx * dt;
+          py += vy * dt;
+          if (tryTransfer()) return;
+
+          const [x0, x1] = boundsX(), [y0, y1] = boundsY();
+          if (px < x0)      { px = x0; vx = -vx * BOUNCE; }
+          else if (px > x1) { px = x1; vx = -vx * BOUNCE; }
+          if (py < y0)      { py = y0; vy = -vy * BOUNCE; }
+          else if (py > y1) { py = y1; vy = -vy * BOUNCE; }
+
+          const f = Math.pow(FRICTION, dt);
+          vx *= f; vy *= f;
+          setRot(clamp(vx * 0.12, -5, 5));
+          place(px, py);
+
+          if (Math.hypot(vx, vy) > MIN_SPEED) raf = requestAnimationFrame(step);
+          else { gliding = false; setRot(0); settle(); }
+        };
+        raf = requestAnimationFrame(step);
+      }
+
+      api[key] = {
+        // Another window hands us the element: we are the owner now
+        receive(m) {
+          stopGlide();
+          ghostSaved = null; ghostFrom = null;
+          const v = view();
+          const [x0, x1] = boundsX(), [y0, y1] = boundsY();
+          px = clamp(m.gx - v.x, x0, x1); py = clamp(m.gy - v.y, y0, y1);
+          vx = m.vx; vy = m.vy;
+          el.style.visibility = '';
+          el.style.pointerEvents = '';
+          el.style.zIndex = ++zTop;
+          place(px, py);
+          if (Math.hypot(vx, vy) > MIN_SPEED) glide(); else settle();
+        },
+        // The owner sticks out of its window into ours: draw our part of it
+        ghost(m) {
+          if (el.classList.contains('is-dragging') || gliding) return;
+          const v = view();
+          const x = m.gx - v.x, y = m.gy - v.y;
+          if (!(x < innerWidth && x + m.w > 0 && y < innerHeight && y + m.h > 0)) { endGhost(); return; }
+          if (ghostSaved === null) ghostSaved = el.style.cssText;
+          ghostFrom = m.id;
+          place(x, y, true);
+          el.style.visibility = 'visible';
+          el.style.pointerEvents = '';
+          el.style.rotate = m.r ? `${m.r}deg` : '';
+          el.style.zIndex = zTop;
+        },
+        ghostOff(m) { if (m.id === ghostFrom) endGhost(); },
+        // Someone grabbed the part of the element that stuck into their window
+        claimed(m) {
+          if (ghostSaved !== null) { endGhost(); return; } // we were only showing it; they will redraw it
+          if (m.from !== myId) return;                     // not the previous owner
+          stopGlide(); setRot(0);
+          ghostSent = false;
+          el.style.visibility = 'hidden';
+          el.style.pointerEvents = 'none';
+        },
+        byeFrom(id) { if (id === ghostFrom) endGhost(); }
+      };
+
       el.addEventListener('pointerdown', e => {
         if (e.button !== 0 || e.target.closest('button, input')) return;
+        if (ghostSaved !== null) { // grabbing the part that sticks into this window: take ownership
+          if (channel) channel.postMessage({ type: 'claim', id: myId, key, from: ghostFrom });
+          ghostSaved = null; ghostFrom = null;
+          el.style.visibility = ''; el.style.pointerEvents = '';
+        }
+        stopGlide(); // catching it mid-slide stops it
         const r = el.getBoundingClientRect();
-        sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top; moved = false;
+        sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top;
+        px = ox; py = oy; vx = vy = 0; moved = false;
+        samples = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
+        el.style.zIndex = ++zTop;
         el.classList.add('is-dragging');
         el.setPointerCapture(e.pointerId);
       });
+
       el.addEventListener('pointermove', e => {
         if (!el.hasPointerCapture(e.pointerId)) return;
         const dx = e.clientX - sx, dy = e.clientY - sy;
         if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
         if (!moved) return;
-        el.style.position = 'fixed';
-        el.style.left = `${Math.max(0, Math.min(innerWidth - el.offsetWidth, ox + dx))}px`;
-        el.style.top = `${Math.max(0, Math.min(innerHeight - el.offsetHeight, oy + dy))}px`;
-        el.style.margin = '0';
-        el.style.right = 'auto';
-        el.style.bottom = 'auto';
-        el.style.transform = 'none';
+        px = ox + dx; py = oy + dy;
+        if (!hasPeers()) { // dragging out of the window is only allowed when another window exists
+          px = clamp(px, 0, Math.max(0, innerWidth - el.offsetWidth));
+          py = clamp(py, 0, Math.max(0, innerHeight - el.offsetHeight));
+        }
+        if (samples.length >= 2) {
+          const a = samples[0], b = samples[samples.length - 1], dtm = Math.max(b.t - a.t, 1);
+          setRot(clamp(((b.x - a.x) / dtm) * 2.2, -5, 5));
+        }
+        place(px, py);
+
+        const t = performance.now();
+        samples.push({ x: e.clientX, y: e.clientY, t });
+        samples = samples.filter(s => t - s.t < 150); // keep last 150 ms
       });
-      const end = () => el.classList.remove('is-dragging');
+
+      const end = () => {
+        if (!el.classList.contains('is-dragging')) return;
+        el.classList.remove('is-dragging');
+        if (!moved) return;
+        wasDragged = true; // stops a drag on the "no hello" link from opening it
+
+        const now = performance.now();
+        const recent = samples.filter(s => now - s.t < 120); // paused before release = no throw
+        vx = vy = 0;
+        if (recent.length >= 2) {
+          const a = recent[0], b = recent[recent.length - 1];
+          const dt = Math.max(b.t - a.t, 1);
+          vx = ((b.x - a.x) / dt) * 16.667; // px per frame
+          vy = ((b.y - a.y) / dt) * 16.667;
+          const sp = Math.hypot(vx, vy);
+          if (sp > MAX_SPEED) { vx = vx / sp * MAX_SPEED; vy = vy / sp * MAX_SPEED; }
+        }
+
+        if (tryTransfer()) return;
+
+        const [x0, x1] = boundsX(), [y0, y1] = boundsY();
+        px = clamp(px, x0, x1); py = clamp(py, y0, y1);
+        place(px, py);
+        if (Math.hypot(vx, vy) > MIN_SPEED) glide(); else { setRot(0); settle(); }
+      };
       el.addEventListener('pointerup', end);
       el.addEventListener('pointercancel', end);
+
+      el.addEventListener('click', e => {
+        if (wasDragged) { e.preventDefault(); e.stopPropagation(); }
+        wasDragged = false;
+      }, true);
     });
 
+    // Keep dragged elements on screen after a resize
+    addEventListener('resize', () => {
+      document.querySelectorAll('.draggable').forEach(el => {
+        if (el.style.position !== 'fixed' || !el.style.left) return;
+        el.style.left = `${Math.max(0, Math.min(parseFloat(el.style.left), innerWidth - el.offsetWidth))}px`;
+        el.style.top  = `${Math.max(0, Math.min(parseFloat(el.style.top), innerHeight - el.offsetHeight))}px`;
+      });
+    });
+
+    // Audio
+    let userMuted = false, ducked = false;
+    const applyMute = () => {
+      audio.muted = userMuted || ducked;
+      muteButton.setAttribute('aria-pressed', String(userMuted));
+    };
+    const saveAudio = () => {
+      try { localStorage.setItem('arda-audio', JSON.stringify({ v: Number(volumeSlider.value), m: userMuted })); } catch {}
+    };
+    try {
+      const sv = JSON.parse(localStorage.getItem('arda-audio') || 'null');
+      if (sv) { volumeSlider.value = sv.v; userMuted = !!sv.m; }
+    } catch {}
     audio.volume = Number(volumeSlider.value);
+    applyMute();
     volumeSlider.addEventListener('input', () => {
       audio.volume = Number(volumeSlider.value);
-      audio.muted = audio.volume === 0;
-      muteButton.setAttribute('aria-pressed', String(audio.muted));
+      userMuted = audio.volume === 0;
+      applyMute(); saveAudio();
     });
-    muteButton.addEventListener('click', () => {
-      audio.muted = !audio.muted;
-      muteButton.setAttribute('aria-pressed', String(audio.muted));
+    muteButton.addEventListener('click', () => { userMuted = !userMuted; applyMute(); saveAudio(); });
+    // with several windows open, only the one you are using plays sound
+    addEventListener('focus', () => {
+      ducked = false; applyMute();
+      if (channel) channel.postMessage({ type: 'focus', id: myId });
     });
+
+    // cursor ring reacts to what is under it
+    const interactive = 'button, a, input';
+    document.addEventListener('pointerover', e => {
+      const t = e.target.closest ? e.target : e.target.parentElement;
+      const hot = !!t.closest(interactive);
+      ring.classList.toggle('is-hover', hot);
+      ring.classList.toggle('is-grab', !hot && !!t.closest('.draggable'));
+    });
+    document.addEventListener('pointerdown', () => ring.classList.add('is-down'));
+    addEventListener('pointerup', () => ring.classList.remove('is-down'));
     enterScreen.addEventListener('click', () => {
       enterScreen.classList.add('is-hidden');
+      document.body.classList.add('entered');
       audio.play().catch(() => {});
+      setTimeout(() => {
+        if (!infoButtons.some(b => b.classList.contains('is-active'))) document.getElementById('hint').classList.add('is-visible');
+      }, 8000);
     }, { once: true });
   </script>
 </body>
